@@ -1,7 +1,7 @@
 import { useRef, Suspense, lazy } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight, MessageSquare, Brain, Code2, Cpu, Terminal, CheckCircle2 } from 'lucide-react';
-const TechCanvas = React.lazy(() => import('./TechCanvas'));
+const TechCanvas = lazy(() => import('./TechCanvas'));
 
 /* ── stagger container ───────────────────────── */
 const containerVariants = {

@@ -78,10 +78,10 @@ export default function Contact() {
     return Object.keys(errs).length === 0;
   };
 
-  const showToast = (type: 'success' | 'error', message: string) => {
+  const showToast = useCallback((type: 'success' | 'error', message: string) => {
     setToast({ show: true, type, message });
-    setTimeout(() => setToast(t => ({ ...t, show: false })), 5000);
-  };
+    setTimeout(() => setToast(t => ({ ...t, show: false })), 4000);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

@@ -94,11 +94,9 @@ function ActiveCard({ exp }: { exp: ExperienceItem }) {
   return (
     <motion.div
       ref={cardRef}
-      /* Enter: slide up from below + fade + scale */
-      initial={{ opacity: 0, y: 48, scale: 0.97, filter: 'blur(4px)' }}
-      animate={{ opacity: 1, y: hovered ? -6 : 0, scale: hovered ? 1.01 : 1, filter: 'blur(0px)' }}
-      /* Exit: slide up + fade + scale down */
-      exit={{ opacity: 0, y: -36, scale: 0.97, filter: 'blur(4px)' }}
+      initial={{ opacity: 0, y: 40, scale: 0.98 }}
+      animate={{ opacity: 1, y: hovered ? -4 : 0, scale: hovered ? 1.01 : 1 }}
+      exit={{ opacity: 0, y: -30, scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 220, damping: 26 }}
       style={{
         rotateX: tiltX,
@@ -106,14 +104,14 @@ function ActiveCard({ exp }: { exp: ExperienceItem }) {
         transformStyle: 'preserve-3d',
         willChange: 'transform, opacity',
         background: 'rgba(255, 255, 255, 0.08)',
-        backdropFilter: 'blur(28px)',
-        WebkitBackdropFilter: 'blur(28px)',
-        border: `1px solid ${hovered ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.16)'}`,
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: `1px solid ${hovered ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)'}`,
         borderRadius: 32,
         boxShadow: hovered
-          ? `0 30px 65px -10px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.12), 0 0 45px -12px ${exp.color}40, inset 0 1px 0 rgba(255,255,255,0.16)`
-          : `0 12px 40px -8px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.10)`,
-        transition: 'border-color 0.3s, box-shadow 0.35s',
+          ? `0 20px 50px -10px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1)`
+          : `0 12px 40px -8px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)`,
+        transition: 'border-color 0.3s, box-shadow 0.3s',
         position: 'relative',
         overflow: 'hidden',
       }}

@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, memo } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 
@@ -19,12 +19,15 @@ const SectionLoader = () => (
   </div>
 );
 
+const MemoizedNavbar = memo(Navbar);
+const MemoizedHero = memo(Hero);
+
 function App() {
   return (
     <div className="bg-[#090d16] text-slate-100 min-h-screen selection:bg-cyan-500/30 selection:text-cyan-200">
-      <Navbar />
+      <MemoizedNavbar />
       <main>
-        <Hero />
+        <MemoizedHero />
         <Suspense fallback={<SectionLoader />}>
           <About />
           <Experience />

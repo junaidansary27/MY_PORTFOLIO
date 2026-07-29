@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, memo } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { User, Layers, Target, Rocket, CheckCircle2, Zap, Code2, Brain } from 'lucide-react';
 
@@ -80,18 +80,19 @@ const CARDS = [
   },
 ];
 
-function AboutCard({ card, index }: { card: typeof CARDS[0]; index: number }) {
+const AboutCard = memo(function AboutCard({ card, index }: { card: typeof CARDS[0]; index: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.96 }}
+      initial={{ opacity: 0, y: 30, scale: 0.97 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -6, scale: 1.02 }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -4, scale: 1.01 }}
       className="relative flex flex-col gap-4 p-6 rounded-2xl overflow-hidden group"
       style={{
         background: 'rgba(10,14,26,0.75)',
-        backdropFilter: 'blur(18px)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         border: `1px solid rgba(148,163,184,0.07)`,
         cursor: 'default',
         willChange: 'transform',
@@ -99,7 +100,7 @@ function AboutCard({ card, index }: { card: typeof CARDS[0]; index: number }) {
       }}
       onMouseEnter={e => {
         (e.currentTarget as HTMLElement).style.borderColor = card.border;
-        (e.currentTarget as HTMLElement).style.boxShadow = `0 16px 40px rgba(0,0,0,0.5), 0 0 0 1px ${card.border}`;
+        (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px ${card.border}`;
       }}
       onMouseLeave={e => {
         (e.currentTarget as HTMLElement).style.borderColor = 'rgba(148,163,184,0.07)';
@@ -149,7 +150,7 @@ function AboutCard({ card, index }: { card: typeof CARDS[0]; index: number }) {
       />
     </motion.div>
   );
-}
+});
 
 export default function About() {
   const headerRef = useRef<HTMLDivElement>(null);
@@ -160,16 +161,8 @@ export default function About() {
 
       {/* Floating gradient blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <motion.div
-          className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/4 rounded-full blur-[120px]"
-          animate={{ x: [0, 24, 0], y: [0, -16, 0] }}
-          transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-500/4 rounded-full blur-[100px]"
-          animate={{ x: [0, -20, 0], y: [0, 18, 0] }}
-          transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut' }}
-        />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/4 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-500/4 rounded-full blur-[100px]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">

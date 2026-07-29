@@ -1,7 +1,8 @@
+import { useMemo } from 'react';
 import { Code, Brain, Zap, Monitor, Server, Database, Wrench } from 'lucide-react';
 
 export default function Skills() {
-  const skillCategories = [
+  const skillCategories = useMemo(() => [
     {
       title: 'Programming Languages',
       icon: <Code size={20} className="text-blue-400" />,
@@ -71,7 +72,7 @@ export default function Skills() {
         { name: 'VS Code & CLI Tools', percentage: 90 }
       ]
     }
-  ];
+  ], []);
 
   return (
     <section id="skills" className="py-20 border-t border-slate-900 bg-slate-950/40 relative">

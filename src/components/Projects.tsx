@@ -138,19 +138,17 @@ function ProjectCard({
   const ac = project.accentColor;
 
   return (
-    /* ── Layer 1 : entrance animation ── */
     <motion.div
-      initial={{ opacity: 0, y: 70, scale: 0.95, filter: 'blur(8px)' }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      initial={{ opacity: 0, y: 50, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{
-        duration: 0.8,
+        duration: 0.6,
         delay: index * 0.12,
         ease: [0.22, 1, 0.36, 1],
       }}
       style={{ perspective: '1400px' }}
     >
-      {/* ── Layer 2 : tilt + hover elevation ── */}
       <motion.div
         ref={cardRef}
         style={{
@@ -161,43 +159,22 @@ function ProjectCard({
           borderRadius: '28px',
           overflow: 'hidden',
           background: 'rgba(8, 11, 22, 0.85)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
           border: `1px solid ${hovered ? ac + '44' : 'rgba(255,255,255,0.055)'}`,
           boxShadow: hovered
-            ? `0 40px 90px -15px rgba(0,0,0,0.95), 0 0 0 1px ${ac}22, 0 0 60px -15px ${ac}44`
+            ? `0 20px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px ${ac}22`
             : '0 8px 30px -10px rgba(0,0,0,0.65)',
-          transition: 'border-color 0.3s, box-shadow 0.4s',
+          transition: 'border-color 0.3s, box-shadow 0.3s',
           cursor: 'default',
           display: 'flex',
           flexDirection: 'column',
-          height: 480, // Fixed card height
+          height: 480,
         }}
-        animate={{ y: hovered ? -10 : 0, scale: hovered ? 1.02 : 1 }}
+        animate={{ y: hovered ? -8 : 0, scale: hovered ? 1.02 : 1 }}
         transition={{ type: 'spring', stiffness: 220, damping: 25 }}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={handleMouseLeave}
-      >
-        {/* Cursor Glow effect */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            left: glowX,
-            top: glowY,
-            transform: 'translate(-50%,-50%)',
-            width: 320,
-            height: 320,
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${ac}18 0%, rgba(99,102,241,0.08) 50%, transparent 70%)`,
-            opacity: hovered ? 1 : 0,
-            transition: 'opacity 0.3s',
-            pointerEvents: 'none',
-            zIndex: 10,
-            mixBlendMode: 'screen',
-          }}
-        />
+        >
 
         {/* ════════════════════════════════
             TOP 60% — PROJECT IMAGE
@@ -215,47 +192,24 @@ function ProjectCard({
               objectFit: 'cover', 
               objectPosition: 'top', 
               display: 'block',
-              x: mouseImgX,
               y: combinedY,
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
             }}
-            animate={{
-              scale: hovered ? 1.05 : 1,
-              filter: hovered
-                ? 'brightness(1.10) contrast(1.08) saturate(1.05)'
-                : 'brightness(1) contrast(1) saturate(1)',
-            }}
+            animate={{ scale: hovered ? 1.03 : 1 }}
             transition={{ type: 'spring', stiffness: 180, damping: 28 }}
           />
 
-          {/* Cinematic gradient overlay from bottom */}
+          {/* Gradient overlay */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: `linear-gradient(to top, rgba(8,11,22,1) 0%, rgba(8,11,22,0.45) 45%, transparent 100%)`,
+            background: `linear-gradient(to top, rgba(8,11,22,1) 0%, rgba(8,11,22,0.4) 45%, transparent 100%)`,
           }} />
 
-          {/* Top-left glass reflection */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 40%)',
-            opacity: hovered ? 1 : 0.4,
-            transition: 'opacity 0.4s',
-            pointerEvents: 'none',
-          }} />
-
-          {/* Top accent gradient border line */}
+          {/* Top accent line */}
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0, height: 1.5,
             background: `linear-gradient(90deg, transparent 5%, ${ac} 50%, transparent 95%)`,
-          }} />
-
-          {/* Soft glow indicator at the bottom edge of image */}
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0, height: 2,
-            background: `linear-gradient(90deg, transparent, ${ac}88, transparent)`,
-            opacity: hovered ? 1 : 0,
-            transition: 'opacity 0.4s',
           }} />
 
           {/* Category tag */}
@@ -263,7 +217,7 @@ function ProjectCard({
             <span style={{
               display: 'inline-block', padding: '4px 12px', borderRadius: 99,
               fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-              background: 'rgba(8,11,22,0.85)', backdropFilter: 'blur(8px)',
+              background: 'rgba(8,11,22,0.85)',
               border: `1px solid ${ac}33`, color: ac,
             }}>
               {project.tag}
@@ -279,7 +233,6 @@ function ProjectCard({
           display: 'flex', flexDirection: 'column',
           height: '40%',
           flexGrow: 1,
-          transform: 'translateZ(20px)',
           position: 'relative', zIndex: 5,
         }}>
           {/* Title and description wrapper */}
@@ -309,48 +262,34 @@ function ProjectCard({
 
           {/* Technology badges & CTA button area */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 'auto' }}>
-            {/* Tech badges */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {project.techStack.slice(0, 4).map((tech, i) => (
-                <motion.span
-                  key={i}
-                  animate={{
-                    y: hovered ? -3 : 0,
-                    scale: hovered ? 1.05 : 1,
-                  }}
-                  transition={{
-                    type: 'spring', stiffness: 350, damping: 18,
-                    delay: hovered ? i * 0.05 : 0,
-                  }}
-                  style={{
-                    display: 'inline-block',
-                    padding: '3px 9px', borderRadius: 99,
-                    fontSize: '10px', fontWeight: 600,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    color: 'rgba(148,163,184,0.85)',
-                    backdropFilter: 'blur(4px)',
-                  }}
-                  whileHover={{
-                    borderColor: `${ac}44`,
-                    color: ac,
-                    background: `${ac}10`
-                  }}
-                >
-                  {tech}
-                </motion.span>
-              ))}
-              {project.techStack.length > 4 && (
-                <span style={{
-                  display: 'inline-block', padding: '3px 9px', borderRadius: 99,
-                  fontSize: '10px', fontWeight: 600,
-                  background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
-                  color: 'rgba(148,163,184,0.45)',
-                }}>
-                  +{project.techStack.length - 4}
-                </span>
-              )}
-            </div>
+             {/* Tech badges */}
+             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+               {project.techStack.slice(0, 4).map((tech, i) => (
+                 <span
+                   key={i}
+                   style={{
+                     display: 'inline-block',
+                     padding: '3px 9px', borderRadius: 99,
+                     fontSize: '10px', fontWeight: 600,
+                     background: 'rgba(255,255,255,0.03)',
+                     border: '1px solid rgba(255,255,255,0.06)',
+                     color: 'rgba(148,163,184,0.85)',
+                   }}
+                 >
+                   {tech}
+                 </span>
+               ))}
+               {project.techStack.length > 4 && (
+                 <span style={{
+                   display: 'inline-block', padding: '3px 9px', borderRadius: 99,
+                   fontSize: '10px', fontWeight: 600,
+                   background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
+                   color: 'rgba(148,163,184,0.45)',
+                 }}>
+                   +{project.techStack.length - 4}
+                 </span>
+               )}
+             </div>
 
             {/* Button */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12 }}>
@@ -368,7 +307,6 @@ function ProjectCard({
               >
                 <span style={{ position: 'relative' }}>
                   View Case Study
-                  {/* Underline animation */}
                   <span style={{
                     position: 'absolute', bottom: -2, left: 0,
                     height: '1px', background: ac,
@@ -377,14 +315,9 @@ function ProjectCard({
                   }} />
                 </span>
 
-                {/* Arrow animation */}
-                <motion.span
-                  animate={{ x: hovered ? 4 : 0 }}
-                  transition={{ type: 'spring', stiffness: 350, damping: 20 }}
-                  style={{ display: 'flex', alignItems: 'center' }}
-                >
+                <span style={{ display: 'flex', alignItems: 'center', transition: 'transform 0.2s', transform: hovered ? 'translateX(4px)' : 'translateX(0)' }}>
                   <ArrowRight size={14} />
-                </motion.span>
+                </span>
               </button>
             </div>
           </div>

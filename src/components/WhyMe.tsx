@@ -57,23 +57,20 @@ const cards = [
 function Card({ card, index }: { card: typeof cards[0]; index: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 48, rotate: -1.5, scale: 0.96 }}
-      whileInView={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 40, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{
-        duration: 0.65,
+        duration: 0.5,
         delay: index * 0.09,
         ease: [0.22, 1, 0.36, 1],
       }}
-      whileHover={{
-        y: -8,
-        scale: 1.025,
-        transition: { duration: 0.3, ease: 'easeOut' },
-      }}
+      whileHover={{ y: -4, scale: 1.01 }}
       className="relative flex flex-col gap-4 p-6 rounded-2xl overflow-hidden group"
       style={{
         background: 'rgba(10,14,26,0.75)',
-        backdropFilter: 'blur(18px)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         border: `1px solid rgba(148,163,184,0.07)`,
         cursor: 'default',
         willChange: 'transform',
@@ -148,21 +145,9 @@ export default function WhyMe() {
     <section id="whyme" className="py-24 border-t border-slate-900 relative overflow-hidden">
       {/* Floating gradient background blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <motion.div
-          className="absolute top-10 left-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px]"
-          animate={{ x: [0, 20, 0], y: [0, -15, 0] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute bottom-10 right-1/4 w-80 h-80 bg-cyan-500/5 rounded-full blur-[100px]"
-          animate={{ x: [0, -20, 0], y: [0, 15, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 w-96 h-96 bg-violet-500/3 rounded-full blur-[120px]"
-          animate={{ scale: [1, 1.15, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        />
+        <div className="absolute top-10 left-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-cyan-500/5 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-96 h-96 bg-violet-500/3 rounded-full blur-[120px]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">

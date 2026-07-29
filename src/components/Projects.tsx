@@ -74,7 +74,8 @@ function ProjectCard({
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
-  const [glowPos, setGlowPos] = useState({ x: '50%', y: '40%' });
+  const glowX = useMotionValue('50%');
+  const glowY = useMotionValue('40%');
 
   // Scroll-linked parallax tracking on the card element
   const { scrollYProgress } = useScroll({
@@ -118,9 +119,10 @@ function ProjectCard({
       mouseImgY.set(ny * 10);
       const px = ((e.clientX - rect.left) / rect.width) * 100;
       const py = ((e.clientY - rect.top) / rect.height) * 100;
-      setGlowPos({ x: `${px}%`, y: `${py}%` });
+      glowX.set(`${px}%`);
+      glowY.set(`${py}%`);
     },
-    [mouseX, mouseY, mouseImgX, mouseImgY]
+    [mouseX, mouseY, mouseImgX, mouseImgY, glowX, glowY]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -128,9 +130,10 @@ function ProjectCard({
     mouseY.set(0);
     mouseImgX.set(0);
     mouseImgY.set(0);
-    setGlowPos({ x: '50%', y: '40%' });
+    glowX.set('50%');
+    glowY.set('40%');
     setHovered(false);
-  }, [mouseX, mouseY, mouseImgX, mouseImgY]);
+  }, [mouseX, mouseY, mouseImgX, mouseImgY, glowX, glowY]);
 
   const ac = project.accentColor;
 
@@ -181,8 +184,8 @@ function ProjectCard({
           aria-hidden
           style={{
             position: 'absolute',
-            left: glowPos.x,
-            top: glowPos.y,
+            left: glowX,
+            top: glowY,
             transform: 'translate(-50%,-50%)',
             width: 320,
             height: 320,
@@ -396,6 +399,8 @@ function ProjectCard({
 ───────────────────────────────────────────────────────────── */
 export default function Projects() {
   const [selected, setSelected] = useState<Project | null>(null);
+  const handleSelect = useCallback((p: Project) => setSelected(p), []);
+  const handleClose = useCallback(() => setSelected(null), []);
 
   return (
     <section id="projects" style={{ padding: '96px 0', borderTop: '1px solid rgba(15,23,42,1)', background: '#080b16', position: 'relative', overflow: 'hidden' }}>
@@ -438,14 +443,14 @@ export default function Projects() {
         {/* Card Grid: 2 columns on desktop/tablet, 1 column on mobile */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {PROJECTS.map((project, i) => (
-            <ProjectCard key={i} project={project} index={i} onSelect={setSelected} />
+            <ProjectCard key={i} project={project} index={i} onSelect={handleSelect} />
           ))}
         </div>
 
       </div>
 
       {/* Modal */}
-      <ProjectModal project={selected} onClose={() => setSelected(null)} />
+      <ProjectModal project={selected} onClose={handleClose} />
     </section>
   );
 }

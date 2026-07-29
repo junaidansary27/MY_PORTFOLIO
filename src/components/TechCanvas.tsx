@@ -126,9 +126,10 @@ export default function TechCanvas() {
         <OrbitControls 
           enableZoom={false} 
           enablePan={false}
-          enableDamping={true}
+          enableDamping={inViewport}
           dampingFactor={0.05}
           rotateSpeed={0.8}
+          eventSource={containerRef.current}
         />
       </Canvas>
     </div>

@@ -1,7 +1,7 @@
-import { useRef } from 'react';
+import { useRef, Suspense, lazy } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight, MessageSquare, Brain, Code2, Cpu, Terminal, CheckCircle2 } from 'lucide-react';
-import TechCanvas from './TechCanvas';
+const TechCanvas = React.lazy(() => import('./TechCanvas'));
 
 /* ── stagger container ───────────────────────── */
 const containerVariants = {
@@ -169,8 +169,10 @@ export default function Hero() {
           transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* R3F Network sphere */}
-          <div className="absolute inset-0 z-0">
-            <TechCanvas />
+          <div className="absolute inset-0 z-0 hidden lg:block">
+            <Suspense fallback={<div className="w-full h-full" />}>
+              <TechCanvas />
+            </Suspense>
           </div>
 
           {/* Profile container — 15% smaller */}
@@ -192,6 +194,8 @@ export default function Hero() {
                   alt="Mohammed Zunaid Shaik"
                   className="w-full h-full object-cover object-top scale-105 hover:scale-100 grayscale hover:grayscale-0 transition-all duration-700"
                   style={{ imageRendering: 'crisp-edges' }}
+                  loading="eager"
+                  fetchpriority="high"
                 />
               </div>
             </div>

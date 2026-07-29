@@ -349,11 +349,20 @@ export default function Experience() {
   // We'll round the mapped value: 0–0.33 → 0, 0.33–0.66 → 1, 0.66–1.0 → 2
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Subscribe to scroll changes to update active index
-  scrollYProgress.on('change', (v) => {
-    const next = v < 0.35 ? 0 : v < 0.70 ? 1 : 2;
-    setActiveIndex((prev) => (prev !== next ? next : prev));
-  });
+  useEffect(() => {
+    let rafId: number;
+    const unsubscribe = scrollYProgress.on('change', (v) => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const next = v < 0.35 ? 0 : v < 0.70 ? 1 : 2;
+        setActiveIndex((prev) => (prev !== next ? next : prev));
+      });
+    });
+    return () => {
+      unsubscribe();
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [scrollYProgress]);
 
   const activeExp = EXPERIENCES[activeIndex];
 

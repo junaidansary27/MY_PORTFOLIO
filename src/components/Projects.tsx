@@ -1,8 +1,11 @@
-import { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef, useCallback } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import ProjectModal from './ProjectModal';
 
+/* ─────────────────────────────────────────────────────────────
+   DATA
+───────────────────────────────────────────────────────────── */
 interface Project {
   title: string; tag: string; description: string;
   problem: string; solution: string; contribution: string;
@@ -57,54 +60,159 @@ const PROJECTS: Project[] = [
   },
 ];
 
-function ProjectCard({ project, index, onSelect }: { project: Project; index: number; onSelect: (p: Project) => void }) {
+/* ─────────────────────────────────────────────────────────────
+   CARD COMPONENT
+───────────────────────────────────────────────────────────── */
+function ProjectCard({
+  project,
+  index,
+  onSelect,
+}: {
+  project: Project;
+  index: number;
+  onSelect: (p: Project) => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
+  const glowX = useMotionValue('50%');
+  const glowY = useMotionValue('40%');
+
+  // Scroll-linked parallax tracking on the card element
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"]
+  });
+  
+  // Transform scroll progress to vertical offset, smoothed with a spring
+  const scrollY = useTransform(scrollYProgress, [0, 1], [-20, 20]);
+  const imageY = useSpring(scrollY, { stiffness: 90, damping: 25 });
+
+  /* Spring-driven tilt */
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), {
+    stiffness: 240, damping: 24, mass: 0.4,
+  });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), {
+    stiffness: 240, damping: 24, mass: 0.4,
+  });
+
+  // Mouse image offset (replacing state updates for performance)
+  const mouseImgX = useSpring(0, { stiffness: 140, damping: 22 });
+  const mouseImgY = useSpring(0, { stiffness: 140, damping: 22 });
+
+  // Combined vertical transformation (scroll parallax + mouse movement)
+  const combinedY = useTransform(
+    [imageY, mouseImgY],
+    ([latestScrollY, latestMouseY]) => (latestScrollY as number) + (latestMouseY as number)
+  );
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width - 0.5;
+      const ny = (e.clientY - rect.top) / rect.height - 0.5;
+      mouseX.set(nx);
+      mouseY.set(ny);
+      mouseImgX.set(nx * 10);
+      mouseImgY.set(ny * 10);
+      const px = ((e.clientX - rect.left) / rect.width) * 100;
+      const py = ((e.clientY - rect.top) / rect.height) * 100;
+      glowX.set(`${px}%`);
+      glowY.set(`${py}%`);
+    },
+    [mouseX, mouseY, mouseImgX, mouseImgY, glowX, glowY]
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    mouseX.set(0);
+    mouseY.set(0);
+    mouseImgX.set(0);
+    mouseImgY.set(0);
+    glowX.set('50%');
+    glowY.set('40%');
+    setHovered(false);
+  }, [mouseX, mouseY, mouseImgX, mouseImgY, glowX, glowY]);
+
   const ac = project.accentColor;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 50, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.12,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      style={{ perspective: '1400px' }}
     >
-      <div
-        className="relative flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900"
+      <motion.div
+        ref={cardRef}
         style={{
-          transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
-          transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s',
-          borderColor: hovered ? `${ac}44` : undefined,
+          rotateX,
+          rotateY,
+          transformStyle: 'preserve-3d',
+          willChange: 'transform',
+          borderRadius: '28px',
+          overflow: 'hidden',
+          background: 'rgba(8, 11, 22, 0.85)',
+          border: `1px solid ${hovered ? ac + '44' : 'rgba(255,255,255,0.055)'}`,
+          boxShadow: hovered
+            ? `0 20px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px ${ac}22`
+            : '0 8px 30px -10px rgba(0,0,0,0.65)',
+          transition: 'border-color 0.3s, box-shadow 0.3s',
+          cursor: 'default',
+          display: 'flex',
+          flexDirection: 'column',
+          height: 480,
         }}
-      >
-        <div style={{ position: 'relative', height: '60%', overflow: 'hidden', flexShrink: 0 }}>
-          <img
+        animate={{ y: hovered ? -8 : 0, scale: hovered ? 1.02 : 1 }}
+        transition={{ type: 'spring', stiffness: 220, damping: 25 }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        >
+
+        {/* ════════════════════════════════
+            TOP 60% — PROJECT IMAGE
+        ════════════════════════════════ */}
+        <div style={{ position: 'relative', height: '60%', overflow: 'hidden', flexShrink: 0, borderTopLeftRadius: 28, borderTopRightRadius: 28 }}>
+          <motion.img
             src={project.image}
             alt={project.title}
             loading="lazy"
-            decoding="async"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'top',
+            style={{ 
+              position: 'absolute',
+              width: '100%', 
+              height: '130%', 
+              top: '-15%',
+              objectFit: 'cover', 
+              objectPosition: 'top', 
               display: 'block',
-              transform: hovered ? 'scale(1.03)' : 'scale(1)',
-              transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+              y: combinedY,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
             }}
+            animate={{ scale: hovered ? 1.03 : 1 }}
+            transition={{ type: 'spring', stiffness: 180, damping: 28 }}
           />
 
+          {/* Gradient overlay */}
           <div style={{
             position: 'absolute', inset: 0,
             background: `linear-gradient(to top, rgba(8,11,22,1) 0%, rgba(8,11,22,0.4) 45%, transparent 100%)`,
           }} />
 
+          {/* Top accent line */}
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0, height: 1.5,
             background: `linear-gradient(90deg, transparent 5%, ${ac} 50%, transparent 95%)`,
           }} />
 
+          {/* Category tag */}
           <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 5 }}>
             <span style={{
               display: 'inline-block', padding: '4px 12px', borderRadius: 99,
@@ -117,11 +225,17 @@ function ProjectCard({ project, index, onSelect }: { project: Project; index: nu
           </div>
         </div>
 
+        {/* ════════════════════════════════
+            BOTTOM 40% — CONTENT
+        ════════════════════════════════ */}
         <div style={{
           padding: '20px 24px 24px',
           display: 'flex', flexDirection: 'column',
+          height: '40%',
           flexGrow: 1,
+          position: 'relative', zIndex: 5,
         }}>
+          {/* Title and description wrapper */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flexGrow: 1 }}>
             <h3 style={{
               margin: 0,
@@ -146,35 +260,38 @@ function ProjectCard({ project, index, onSelect }: { project: Project; index: nu
             </p>
           </div>
 
+          {/* Technology badges & CTA button area */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 'auto' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {project.techStack.slice(0, 4).map((tech, i) => (
-                <span
-                  key={i}
-                  style={{
-                    display: 'inline-block',
-                    padding: '3px 9px', borderRadius: 99,
-                    fontSize: '10px', fontWeight: 600,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    color: 'rgba(148,163,184,0.85)',
-                  }}
-                >
-                  {tech}
-                </span>
-              ))}
-              {project.techStack.length > 4 && (
-                <span style={{
-                  display: 'inline-block', padding: '3px 9px', borderRadius: 99,
-                  fontSize: '10px', fontWeight: 600,
-                  background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
-                  color: 'rgba(148,163,184,0.45)',
-                }}>
-                  +{project.techStack.length - 4}
-                </span>
-              )}
-            </div>
+             {/* Tech badges */}
+             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+               {project.techStack.slice(0, 4).map((tech, i) => (
+                 <span
+                   key={i}
+                   style={{
+                     display: 'inline-block',
+                     padding: '3px 9px', borderRadius: 99,
+                     fontSize: '10px', fontWeight: 600,
+                     background: 'rgba(255,255,255,0.03)',
+                     border: '1px solid rgba(255,255,255,0.06)',
+                     color: 'rgba(148,163,184,0.85)',
+                   }}
+                 >
+                   {tech}
+                 </span>
+               ))}
+               {project.techStack.length > 4 && (
+                 <span style={{
+                   display: 'inline-block', padding: '3px 9px', borderRadius: 99,
+                   fontSize: '10px', fontWeight: 600,
+                   background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
+                   color: 'rgba(148,163,184,0.45)',
+                 }}>
+                   +{project.techStack.length - 4}
+                 </span>
+               )}
+             </div>
 
+            {/* Button */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12 }}>
               <button
                 onClick={() => onSelect(project)}
@@ -205,19 +322,23 @@ function ProjectCard({ project, index, onSelect }: { project: Project; index: nu
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
 
+/* ─────────────────────────────────────────────────────────────
+   SECTION
+───────────────────────────────────────────────────────────── */
 export default function Projects() {
   const [selected, setSelected] = useState<Project | null>(null);
-  const handleSelect = (p: Project) => setSelected(p);
-  const handleClose = () => setSelected(null);
+  const handleSelect = useCallback((p: Project) => setSelected(p), []);
+  const handleClose = useCallback(() => setSelected(null), []);
 
   return (
     <section id="projects" style={{ padding: '96px 0', borderTop: '1px solid rgba(15,23,42,1)', background: '#080b16', position: 'relative', overflow: 'hidden' }}>
       
+      {/* Background blobs */}
       <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', top: '20%', left: '10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(59,130,246,0.04) 0%, transparent 70%)', filter: 'blur(80px)' }} />
         <div style={{ position: 'absolute', bottom: '10%', right: '10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(6,182,212,0.04) 0%, transparent 70%)', filter: 'blur(80px)' }} />
@@ -225,12 +346,13 @@ export default function Projects() {
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 5 }}>
         
+        {/* Section Header */}
         <motion.div
           style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 72px' }}
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           <p style={{
             fontFamily: 'Outfit, sans-serif', fontWeight: 600,
@@ -251,6 +373,7 @@ export default function Projects() {
           </p>
         </motion.div>
 
+        {/* Card Grid: 2 columns on desktop/tablet, 1 column on mobile */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {PROJECTS.map((project, i) => (
             <ProjectCard key={i} project={project} index={i} onSelect={handleSelect} />
@@ -259,6 +382,7 @@ export default function Projects() {
 
       </div>
 
+      {/* Modal */}
       <ProjectModal project={selected} onClose={handleClose} />
     </section>
   );

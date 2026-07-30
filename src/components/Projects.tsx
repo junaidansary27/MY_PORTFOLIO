@@ -20,7 +20,7 @@ const PROJECTS: Project[] = [
     techStack: ['n8n', 'OpenAI API', 'Gmail API', 'Google Sheets', 'JavaScript'],
     challenges: 'Handling token limits when emails contain long thread histories, and preventing AI from hallucinating pricing or policy details.',
     learnings: 'Implemented thread parsing to isolate only the latest reply, and engineered strict system prompt guardrails for sensitive email types.',
-    gradient: 'from-blue-600 to-cyan-500', accentColor: '#3b82f6', image: '/proj-email.webp',
+    gradient: 'from-blue-600 to-cyan-500', accentColor: '#3b82f6', image: '/proj-email.png',
   },
   {
     title: 'ATS Resume Tracker & Role Matcher', tag: 'AI Product',
@@ -31,7 +31,7 @@ const PROJECTS: Project[] = [
     techStack: ['Python', 'FastAPI', 'React', 'PyPDF2', 'SentenceTransformers', 'Tailwind CSS'],
     challenges: 'Maintaining parsing accuracy across custom multi-column PDF layouts and decorative resume designs.',
     learnings: 'Refined text extraction to parse line-by-line rather than by visual blocks, significantly improving accuracy.',
-    gradient: 'from-cyan-500 to-emerald-500', accentColor: '#06b6d4', image: '/proj-ats.webp',
+    gradient: 'from-cyan-500 to-emerald-500', accentColor: '#06b6d4', image: '/proj-ats.png',
   },
   {
     title: 'AI Chatbot', tag: 'Full Stack',
@@ -42,7 +42,7 @@ const PROJECTS: Project[] = [
     techStack: ['React', 'Node.js', 'MongoDB', 'Anthropic API', 'Server-Sent Events'],
     challenges: 'Keeping latency low during text streams while simultaneously saving session data.',
     learnings: 'Switched from HTTP to SSE for typing animations, and built a summarization algorithm to compress old memory.',
-    gradient: 'from-violet-600 to-blue-500', accentColor: '#7c3aed', image: '/proj-chatbot.webp',
+    gradient: 'from-violet-600 to-blue-500', accentColor: '#7c3aed', image: '/proj-chatbot.png',
   },
   {
     title: 'NOCODESAARTHI Website', tag: 'Web Dev',
@@ -53,7 +53,7 @@ const PROJECTS: Project[] = [
     techStack: ['React', 'Vite', 'Tailwind CSS', 'Make.com API', 'Framer Motion'],
     challenges: 'Optimizing heavy visual sections and SVG illustrations to achieve strong performance scores on mobile devices.',
     learnings: 'Implemented image lazy loading, component code-splitting, and CSS bundle minification for fast load times.',
-    gradient: 'from-emerald-500 to-teal-600', accentColor: '#10b981', image: '/proj-nocode.webp',
+    gradient: 'from-emerald-500 to-teal-600', accentColor: '#10b981', image: '/proj-nocode.png',
   },
 ];
 

@@ -1,4 +1,4 @@
-import { useRef, Suspense, lazy, memo } from 'react';
+import { useRef, Suspense, lazy, memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, MessageSquare, Terminal, Code2, Brain, Cpu } from 'lucide-react';
 
@@ -110,7 +110,7 @@ export default function Hero() {
             <div className="relative w-full h-full rounded-full p-[3px] bg-gradient-to-tr from-blue-500 via-cyan-400 to-emerald-400 shadow-lg">
               <div className="w-full h-full rounded-full overflow-hidden bg-slate-950">
                 <img
-                  src="/profile.webp"
+                  src="/profile.jpg"
                   alt="Mohammed Zunaid Shaik"
                   className="w-full h-full object-cover object-top"
                   loading="eager"

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import ProjectModal from './ProjectModal';
@@ -212,8 +212,8 @@ function ProjectCard({ project, index, onSelect }: { project: Project; index: nu
 
 export default function Projects() {
   const [selected, setSelected] = useState<Project | null>(null);
-  const handleSelect = useCallback((p: Project) => setSelected(p), []);
-  const handleClose = useCallback(() => setSelected(null), []);
+  const handleSelect = (p: Project) => setSelected(p);
+  const handleClose = () => setSelected(null);
 
   return (
     <section id="projects" style={{ padding: '96px 0', borderTop: '1px solid rgba(15,23,42,1)', background: '#080b16', position: 'relative', overflow: 'hidden' }}>

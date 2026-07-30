@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Send, Check, AlertCircle, Phone } from 'lucide-react';
 import emailjs from '@emailjs/browser';
@@ -56,7 +56,7 @@ export default function Contact() {
     }
   ];
 
-  const validate = useCallback(() => {
+  const validate = () => {
     const errs: Partial<typeof formData> = {};
     if (!formData.name.trim()) errs.name = 'Name is required';
     if (!formData.email.trim()) errs.email = 'Email is required';
@@ -72,22 +72,22 @@ export default function Contact() {
     if (!formData.message.trim()) errs.message = 'Message is required';
     setErrors(errs);
     return Object.keys(errs).length === 0;
-  }, [formData]);
+  };
 
-  const showToast = useCallback((type: 'success' | 'error', message: string) => {
+  const showToast = (type: 'success' | 'error', message: string) => {
     setToast({ show: true, type, message });
     setTimeout(() => setToast(t => ({ ...t, show: false })), 4000);
-  }, []);
+  };
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
-  }, [errors]);
+  };
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
@@ -115,14 +115,14 @@ export default function Contact() {
       showToast('error', 'Failed to send. Please email me directly at Shaikmohammedzunaid1@gmail.com');
       setTimeout(() => setStatus('idle'), 4000);
     }
-  }, [formData, validate, showToast]);
+  };
 
-  const inputClass = useCallback((field: keyof typeof errors) =>
+  const inputClass = (field: keyof typeof errors) =>
     `w-full px-4 py-3 rounded-xl bg-slate-900 border text-slate-200 text-sm focus:outline-none transition-colors placeholder-slate-600 ${
       errors[field]
         ? 'border-red-500/60 focus:border-red-400'
         : 'border-slate-800 focus:border-cyan-500/50'
-    }`, [errors]);
+    }`;
 
   return (
     <section id="contact" className="py-20 border-t border-slate-900 bg-slate-950 relative">

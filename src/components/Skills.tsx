@@ -78,7 +78,6 @@ export default function Skills() {
     <section id="skills" className="py-20 border-t border-slate-900 bg-slate-950/40 relative">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         
-        {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="font-display text-xs font-semibold uppercase tracking-widest text-cyan-400 mb-3">
             Skills
@@ -91,12 +90,10 @@ export default function Skills() {
           </p>
         </div>
 
-        {/* Skills Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {skillCategories.map((category, index) => (
-            <div key={index} className="glass-card p-6 rounded-2xl flex flex-col space-y-5 text-left border border-slate-800/60">
+            <div key={index} className="p-6 rounded-2xl flex flex-col space-y-5 text-left border border-slate-800 bg-slate-900">
               
-              {/* Category Header */}
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
                   {category.icon}
@@ -106,7 +103,6 @@ export default function Skills() {
                 </h4>
               </div>
 
-              {/* Skills List */}
               <div className="space-y-4 flex-grow">
                 {category.skills.map((skill, sIdx) => (
                   <div key={sIdx} className="space-y-1.5">
@@ -114,10 +110,9 @@ export default function Skills() {
                       <span className="text-slate-300">{skill.name}</span>
                       <span className="text-slate-400">{skill.percentage}%</span>
                     </div>
-                    {/* Progress Track */}
                     <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800/50">
                       <div 
-                        className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-1000"
+                        className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full"
                         style={{ width: `${skill.percentage}%` }}
                       />
                     </div>

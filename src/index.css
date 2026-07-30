@@ -31,7 +31,7 @@
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: #090d16; }
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #1e3a5f, #1e293b);
+    background: #1e293b;
     border-radius: 6px;
   }
   ::-webkit-scrollbar-thumb:hover { background: #334155; }
@@ -39,8 +39,6 @@
 
 .glass-nav {
   background: rgba(9, 13, 22, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 

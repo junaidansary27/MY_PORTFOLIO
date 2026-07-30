@@ -1,15 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { Mail, MapPin, Send, Check, AlertCircle, Phone } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
-// ─────────────────────────────────────────────
-// EmailJS Configuration
-// Replace the placeholders below with your real credentials from https://www.emailjs.com/
-// ─────────────────────────────────────────────
-const EMAILJS_SERVICE_ID  = 'service_9haq3bx';   // ← Your EmailJS Service ID
-const EMAILJS_TEMPLATE_ID = 'template_517goyo';  // ← Your EmailJS Template ID
-const EMAILJS_PUBLIC_KEY  = 'bot1bkKNnI_laiHtN'; // ← Your EmailJS Public Key
-// ─────────────────────────────────────────────
+const EMAILJS_SERVICE_ID  = 'service_9haq3bx';
+const EMAILJS_TEMPLATE_ID = 'template_517goyo';
+const EMAILJS_PUBLIC_KEY  = 'bot1bkKNnI_laiHtN';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -60,7 +56,7 @@ export default function Contact() {
     }
   ];
 
-  const validate = () => {
+  const validate = useCallback(() => {
     const errs: Partial<typeof formData> = {};
     if (!formData.name.trim()) errs.name = 'Name is required';
     if (!formData.email.trim()) errs.email = 'Email is required';
@@ -76,22 +72,22 @@ export default function Contact() {
     if (!formData.message.trim()) errs.message = 'Message is required';
     setErrors(errs);
     return Object.keys(errs).length === 0;
-  };
+  }, [formData]);
 
   const showToast = useCallback((type: 'success' | 'error', message: string) => {
     setToast({ show: true, type, message });
     setTimeout(() => setToast(t => ({ ...t, show: false })), 4000);
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
-  };
+  }, [errors]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
@@ -112,30 +108,28 @@ export default function Contact() {
       );
       setStatus('success');
       setFormData({ name: '', email: '', mobile: '', subject: '', message: '' });
-      showToast('success', '✅ Message sent! I\'ll get back to you within 24 hours.');
+      showToast('success', 'Message sent! I\'ll get back to you within 24 hours.');
       setTimeout(() => setStatus('idle'), 4000);
     } catch {
       setStatus('error');
-      showToast('error', '❌ Failed to send. Please email me directly at Shaikmohammedzunaid1@gmail.com');
+      showToast('error', 'Failed to send. Please email me directly at Shaikmohammedzunaid1@gmail.com');
       setTimeout(() => setStatus('idle'), 4000);
     }
-  };
+  }, [formData, validate, showToast]);
 
-  const inputClass = (field: keyof typeof errors) =>
+  const inputClass = useCallback((field: keyof typeof errors) =>
     `w-full px-4 py-3 rounded-xl bg-slate-900 border text-slate-200 text-sm focus:outline-none transition-colors placeholder-slate-600 ${
       errors[field]
         ? 'border-red-500/60 focus:border-red-400'
         : 'border-slate-800 focus:border-cyan-500/50'
-    }`;
+    }`, [errors]);
 
   return (
     <section id="contact" className="py-20 border-t border-slate-900 bg-slate-950 relative">
-      {/* Background */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute bottom-0 right-10 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-10 w-96 h-96 bg-blue-500/5 rounded-full blur-[80px]" />
       </div>
 
-      {/* Success / Error Toast */}
       {toast.show && (
         <div
           className={`fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl transition-all duration-300 ${
@@ -143,7 +137,6 @@ export default function Contact() {
               ? 'bg-emerald-900/90 border border-emerald-500/30 text-emerald-300'
               : 'bg-red-900/90 border border-red-500/30 text-red-300'
           }`}
-          style={{ backdropFilter: 'blur(16px)' }}
         >
           {toast.type === 'success' ? <Check size={18} /> : <AlertCircle size={18} />}
           <span className="text-sm font-medium">{toast.message}</span>
@@ -151,7 +144,6 @@ export default function Contact() {
       )}
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 z-10 relative">
-        {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="font-display text-xs font-semibold uppercase tracking-widest text-cyan-400 mb-3">
             Contact
@@ -165,7 +157,6 @@ export default function Contact() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 text-left">
-          {/* Contact Info */}
           <div className="lg:col-span-5 space-y-6">
             <h4 className="font-display text-xl font-bold text-slate-200">Contact Information</h4>
             <p className="text-slate-400 text-sm leading-relaxed font-light">
@@ -178,7 +169,7 @@ export default function Contact() {
                   href={info.href}
                   target={info.href.startsWith('http') ? '_blank' : undefined}
                   rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  className="glass-card p-4 rounded-2xl flex items-center gap-4 hover:border-slate-700/60 transition-all duration-200 block hover:-translate-y-0.5"
+                  className="flex items-center gap-4 p-4 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all duration-200 block"
                 >
                   <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center border border-slate-800 shrink-0">
                     {info.icon}
@@ -194,9 +185,8 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Contact Form with EmailJS */}
           <div className="lg:col-span-7">
-            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-slate-800/80">
+            <div className="p-6 sm:p-8 rounded-3xl border border-slate-800/80 bg-slate-900">
               <h4 className="font-display text-lg sm:text-xl font-bold text-slate-200 mb-2">Send a Message</h4>
               <p className="text-slate-500 text-xs mb-6">
                 Powered by EmailJS — messages arrive directly in my Gmail inbox.
@@ -204,7 +194,6 @@ export default function Contact() {
 
               <form ref={formRef} onSubmit={handleSubmit} className="space-y-5" noValidate>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Name */}
                   <div className="flex flex-col space-y-1.5">
                     <label htmlFor="name" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                       Name <span className="text-red-400">*</span>
@@ -217,7 +206,6 @@ export default function Contact() {
                     {errors.name && <p className="text-[11px] text-red-400">{errors.name}</p>}
                   </div>
 
-                  {/* Email */}
                   <div className="flex flex-col space-y-1.5">
                     <label htmlFor="email" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                       Email Address <span className="text-red-400">*</span>
@@ -231,7 +219,6 @@ export default function Contact() {
                   </div>
                 </div>
 
-                {/* Mobile Number */}
                 <div className="flex flex-col space-y-1.5">
                   <label htmlFor="mobile" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     Mobile Number <span className="text-red-400">*</span>
@@ -252,7 +239,6 @@ export default function Contact() {
                   {errors.mobile && <p className="text-[11px] text-red-400">{errors.mobile}</p>}
                 </div>
 
-                {/* Subject */}
                 <div className="flex flex-col space-y-1.5">
                   <label htmlFor="subject" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     Subject
@@ -264,7 +250,6 @@ export default function Contact() {
                   />
                 </div>
 
-                {/* Message */}
                 <div className="flex flex-col space-y-1.5">
                   <label htmlFor="message" className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     Message <span className="text-red-400">*</span>
@@ -278,7 +263,6 @@ export default function Contact() {
                   {errors.message && <p className="text-[11px] text-red-400">{errors.message}</p>}
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
                   disabled={status === 'submitting' || status === 'success'}

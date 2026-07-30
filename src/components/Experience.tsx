@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useSpring, AnimatePresence, MotionValue } from 'framer-motion';
 import { Calendar, Cpu, Code2, Brain } from 'lucide-react';
 

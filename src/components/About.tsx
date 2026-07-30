@@ -1,4 +1,4 @@
-import { useRef, memo } from 'react';
+import { useRef, useState, memo } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { User, Layers, Target, Rocket, CheckCircle2, Zap, Code2, Brain } from 'lucide-react';
 
@@ -6,6 +6,8 @@ const CARDS = [
   {
     icon: <User size={20} />,
     color: '#3b82f6',
+    bg: 'rgba(59,130,246,0.1)',
+    border: 'rgba(59,130,246,0.22)',
     title: 'Who I Am',
     content: (
       <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">
@@ -16,6 +18,8 @@ const CARDS = [
   {
     icon: <Layers size={20} />,
     color: '#06b6d4',
+    bg: 'rgba(6,182,212,0.1)',
+    border: 'rgba(6,182,212,0.22)',
     title: 'What I Build',
     content: (
       <ul className="space-y-2">
@@ -37,6 +41,8 @@ const CARDS = [
   {
     icon: <Target size={20} />,
     color: '#10b981',
+    bg: 'rgba(16,185,129,0.1)',
+    border: 'rgba(16,185,129,0.22)',
     title: 'Current Focus',
     content: (
       <div className="space-y-3">
@@ -57,6 +63,8 @@ const CARDS = [
   {
     icon: <Rocket size={20} />,
     color: '#8b5cf6',
+    bg: 'rgba(139,92,246,0.1)',
+    border: 'rgba(139,92,246,0.22)',
     title: 'Career Goal',
     content: (
       <div className="space-y-3">
@@ -73,26 +81,68 @@ const CARDS = [
 ];
 
 const AboutCard = memo(function AboutCard({ card, index }: { card: typeof CARDS[0]; index: number }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col gap-4 p-6 rounded-2xl border border-slate-800 bg-slate-900"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative flex flex-col gap-4 p-6 rounded-2xl overflow-hidden group"
+      style={{
+        background: 'rgba(10,14,26,0.75)',
+        border: `1px solid ${hovered ? card.border : 'rgba(148,163,184,0.07)'}`,
+        cursor: 'default',
+        willChange: 'transform',
+        transition: 'border-color 0.3s, box-shadow 0.3s',
+        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
+        boxShadow: hovered ? `0 20px 40px -12px rgba(0,0,0,0.5), 0 0 0 1px ${card.border}` : 'none',
+      }}
     >
-      <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-        style={{ background: 'rgba(255,255,255,0.05)', color: card.color }}>
-        {card.icon}
-      </div>
+      {/* Animated top border line */}
+      <motion.div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: `linear-gradient(90deg, transparent, ${card.color}, transparent)` }}
+        initial={{ scaleX: 0, opacity: 0 }}
+        whileInView={{ scaleX: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
+      />
 
-      <h4 className="font-display font-bold text-base sm:text-lg text-slate-100 leading-snug">
+      {/* Radial hover glow */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: `radial-gradient(ellipse at 50% 0%, ${card.color}12, transparent 70%)` }}
+      />
+
+      {/* Icon */}
+      <motion.div
+        className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 relative z-10"
+        style={{ background: card.bg, color: card.color, border: `1px solid ${card.border}` }}
+        whileHover={{ scale: 1.1, rotate: 5 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+      >
+        {card.icon}
+      </motion.div>
+
+      {/* Title */}
+      <h4 className="font-display font-bold text-base sm:text-lg text-slate-100 leading-snug relative z-10">
         {card.title}
       </h4>
 
-      <div className="flex-grow">
+      {/* Content */}
+      <div className="relative z-10 flex-grow">
         {card.content}
       </div>
+
+      {/* Bottom accent line */}
+      <div
+        className="absolute bottom-0 left-6 right-6 h-px opacity-0 group-hover:opacity-60 transition-opacity duration-300"
+        style={{ background: `linear-gradient(90deg, transparent, ${card.color}, transparent)` }}
+      />
     </motion.div>
   );
 });
